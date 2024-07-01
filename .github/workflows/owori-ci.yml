@@ -22,14 +22,14 @@ jobs:
 
       # Set up ENV (prod)
       - name: Set ENV
-        if: ${{ github.head_ref == 'main' }}
+        if: ${{ github.event.pull_request.base.ref == 'main' }}
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.ENV_PROD_YML }}" | base64 --decode > src/main/resources/env.yml
 
       # Set up ENV (dev)
       - name: Set ENV
-        if: ${{ github.head_ref == 'develop' }}
+        if: ${{ github.event.pull_request.base.ref == 'develop' }}
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.ENV_DEV_YML }}" | base64 --decode > src/main/resources/env.yml
