@@ -1,41 +1,54 @@
 name: Owori Backend CI
 on:
-  push:
-    paths:
-      - '**.java'
   pull_request:
-    paths:
-      - '**.java'
-defaults:
-  run:
-    shell: bash
-    working-directory: .
+    branches: ["main", "develop"]
+
 jobs:
-  backend-test:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        architecture: x64
 
-    - name: Set ENV
-      run: |
-        mkdir -p src/main/resources
-        echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/env.yml
-        find src
-        
-    - run: chmod +x gradlew
-    - run: ./gradlew build
+      # Checkout the code
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Test Coverage Report
-      id: jacoco
-      uses: madrapps/jacoco-report@v1.2
-      with:
-        paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
-        title: "테스트 커버리지 측정"
-        min-coverage-overall: 50
-        min-coverage-changed-files: 50
+      # Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      # Set up ENV (prod)
+      - name: Set ENV
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.ENV_PROD_YML }}" | base64 --decode > src/main/resources/env.yml
+
+      # Set up ENV (dev)
+      - name: Set ENV
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.ENV_DEV_YML }}" | base64 --decode > src/main/resources/env.yml
+
+      # Build with Gradle
+      - name: grant permission
+        run: chmod +x gradlew
+
+      # Build with Gradle
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      # Test with Gradle
+      - name: Test Coverage Report
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.2
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "테스트 커버리지 측정"
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50

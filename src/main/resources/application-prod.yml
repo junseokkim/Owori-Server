@@ -4,7 +4,7 @@ server:
 
 spring:
   config:
-    import: classpath:env-prod.yml
+    import: classpath:env.yml
 
   jpa:
     show-sql: true
