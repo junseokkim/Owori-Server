@@ -38,9 +38,9 @@ jobs:
       - name: grant permission
         run: chmod +x gradlew
 
-      # Build with Gradle
-      - name: Build with Gradle
-        run: ./gradlew build
+      # Build with Gradle and skip tests
+      - name: Build with Gradle (skip tests)
+        run: ./gradlew build -x test
 
       # Test with Gradle
       - name: Test Coverage Report
