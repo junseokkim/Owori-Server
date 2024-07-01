@@ -3,11 +3,6 @@ server:
     context-path: /api/v1
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://owori-db:3306/owori?serverTimezone=Asia/Seoul
-    username: root
-
   config:
     import: classpath:env.yml
 
@@ -24,8 +19,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
   main:
     allow-bean-definition-overriding: true
